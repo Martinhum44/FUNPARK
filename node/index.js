@@ -18,11 +18,11 @@ var port = process.env.PORT || 3000
          
 async function start(){
     try{
-        await connect(process.env.CONNECTION_STRING)
+        await connect("mongodb+srv://martingomez:CatV!01eta@cluster0.6bcwr.mongodb.net/?appName=Cluster0")
         app.listen(3000, console.log(`listening on port ${port}`))
     } catch(error){
         console.log("THE ERROR: "+error)
-    }
-} 
+    } 
+}  
  
 start() 

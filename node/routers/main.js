@@ -6,9 +6,9 @@ const { createAccount, getAccount, searchAccount, chargeAccount, deleteAccount, 
 router.use(express.json())
 router.use(cors())
 
-router.post("/get-account/", getAccount)
+router.get("/get-account/:PIN/:ID", getAccount)
 router.post("/create-account", createAccount)
-router.get("/search-account", searchAccount)
+router.get("/search-account/:PIN/:ID", searchAccount)
 router.patch("/charge-account/:ID", chargeAccount)
 router.delete("/delete-account/:ID", deleteAccount)
 router.patch("/pay-account/:ID", payAccount)

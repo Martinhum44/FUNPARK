@@ -50,9 +50,33 @@ const App: React.FC = () => {
             setLoginAccNumber(data)
             setScan(false)
         }, (err) => {
-            //console.error(err)
+            console.error(err)
         })
+
+        if (localStorage.getItem("user") != null) {
+            console.log(localStorage.getItem("user"), localStorage.getItem("pin"))
+            login(localStorage.getItem("user"), localStorage.getItem("pin"), false)
+        }
     }, [])
+
+    async function login(acc:string, pin:string, setShit:boolean) { 
+                    console.log(acc, pin)
+                    const res = await fetch(`http://localhost:3000/api/get-account/${pin}/${acc}`, {
+                        method: "GET"
+                    })
+                    const json: JsonResultAccount = await res.json()
+                    if(!json.success) {
+                        console.log(json)
+                        console.log(json.error)
+                        return alert(json.msg) 
+                    }
+                    if(setShit){
+                        localStorage.setItem("user", loginAccNumber)
+                        localStorage.setItem("pin", loginPIN)
+                    }
+                    setAccData(json.account)
+                    setState("logged-in");
+    }
 
     async function create() {
         console.log(document.getElementById("gen_button"))
@@ -74,9 +98,11 @@ const App: React.FC = () => {
             alert(json.msg)
             setState("logged-in")
             setAccData(json.account)
+            localStorage.setItem("user", loginAccNumber)
+            localStorage.setItem("pin", loginPIN)
         } else {
             alert(json.msg)
-        }
+        } 
     }
 
     return (
@@ -105,6 +131,7 @@ const App: React.FC = () => {
                         setConf(false); 
                     } 
                     codeRef.current = text;
+                    
                 }}/>
                 <button onClick={create} style={{ marginTop: "10px" }} className={styles.gray} disabled={conf} ref={confirmCreateWalletRef}>Confirm create wallet</button>
             </div>
@@ -117,22 +144,8 @@ const App: React.FC = () => {
                 </div>
                 <input placeholder='Account Number' value={loginAccNumber} style={{ marginBottom: "10px", display: "block" }} onChange={(e) => { setLoginAccNumber(e.target.value) }} type="text" />
                 <input placeholder='Account PIN' value={loginPIN} style={{ marginBottom: "10px", display: "block" }} onChange={(e) => { setLoginPIN(e.target.value) }} type="text" />
-                <button onClick={async() => { 
-                    console.log(loginAccNumber, loginPIN)
-                    const res = await fetch(`http://localhost:3000/api/get-account/`, {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({PIN: loginPIN, ID: loginAccNumber})
-                    })
-                    const json: JsonResultAccount = await res.json()
-                    if(!json.success) {
-                        console.log(json)
-                        console.log(json.error)
-                        return alert(json.msg) 
-                    }
-                    setAccData(json.account)
-                    setState("logged-in");
-                }} style={{display: "inline-block", marginRight: "10px"}} disabled={loginPIN.length != 4 || loginAccNumber.length != 30 ? true: false} className={loginPIN.length != 4 || loginAccNumber.length != 30 ? styles.gray: styles.blue}>Log in</button>
+                <button onClick={() => login(loginAccNumber,loginPIN,true)}
+                 style={{display: "inline-block", marginRight: "10px"}} disabled={loginPIN.length != 4 || loginAccNumber.length != 30 ? true: false} className={loginPIN.length != 4 || loginAccNumber.length != 30 ? styles.gray: styles.blue}>Log in</button>
             </div>
             <div id="logged-in" style={{ display: state === "logged-in" ? "flex" : "none", flexDirection: "column", alignItems: "center"}}>
                 <h1>Welcome {accData && accData.name}</h1>

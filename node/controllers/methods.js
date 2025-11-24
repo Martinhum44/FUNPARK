@@ -24,16 +24,17 @@ module.exports = {
     }),
 
     getAccount: asyncWrapper(async(req, res) => {
-        const {ID, PIN: pin_plain} = req.body
-        const {id, balance, name, pin_hash} = await accountModel.findOne({id: ID})
+        const {ID, PIN: pin_plain} = req.params
+        const data = await accountModel.findOne({id: ID})
+        console.log(data)
 
-        console.log(name, id, balance, pin_hash, await bcrypt.compare(pin_plain, pin_hash))
+        console.log(data.name, data.id, data.balance, data.pin, await bcrypt.compare(pin_plain, data.pin))
 
-        if(!name || !id || !balance || !pin_hash || !await bcrypt.compare(pin_plain, pin_hash)) {
+        if(!data.name || !data.id || data.balance === undefined || !data.pin || !await bcrypt.compare(pin_plain, data.pin)) {
             throw new OurErrorVersion(`Wallet ID ${ID} with PIN ${pin_plain} not found`, 404)
         }
 
-        res.status(200).json({account: {id, balance, name}, msg: "Account get successful", success: true})
+        res.status(200).json({account: {id: data.id, balance: data.balance, name: data.name}, msg: "Account get successful", success: true})
     }),
 
     searchAccount: asyncWrapper((req, res) => {
