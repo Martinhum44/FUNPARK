@@ -98,8 +98,8 @@ const App: React.FC = () => {
             alert(json.msg)
             setState("logged-in")
             setAccData(json.account)
-            localStorage.setItem("user", loginAccNumber)
-            localStorage.setItem("pin", loginPIN)
+            localStorage.setItem("user", json.account.id)
+            localStorage.setItem("pin", PIN)
         } else {
             alert(json.msg)
         } 
@@ -170,6 +170,11 @@ const App: React.FC = () => {
                     <h3>Balance: ${accData && accData.balance}</h3>
                     <h6>ID: {accData && accData.id}</h6>
                 </div>
+                <button style={{display: "inline-block", width: "120px", height: "30px", fontSize: "12px", marginRight: "10px"}} onClick={() => {
+                    localStorage.removeItem("PIN")
+                    localStorage.removeItem("user")
+                    window.location.reload()
+                }} className={styles.red}>Log out</button>
             </div>
             <div style={{marginTop: "10px", display: state === "creation" || state === "login" ? "block" : "none"}}>
                     <button onClick={() => setState("login")} style={{display: "inline-block", width: "75px", height: "30px", fontSize: "12px", marginRight: "10px"}} className={styles.blue}>Log in</button>
